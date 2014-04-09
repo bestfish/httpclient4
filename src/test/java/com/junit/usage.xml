@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jee="http://www.springframework.org/schema/jee"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd
+	http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-3.2.xsd"
+	default-autowire="byName">
+	
+	<bean id="poolingHttpClient" class="com.fish.play.http.client.impl.PoolingHttpClientImpl" init-method="init" destroy-method="closeHttpClient">
+		<property name="defaultMaxPerRoute" value="20"></property>
+		<property name="maxTotal" value="200"></property>
+		<property name="idleTime" value="10000"></property>
+		<property name="keepAliveDuration" value="5000"></property>
+		<property name="evictDelay" value="5000"></property>
+		<property name="connectTimeout" value="5000"></property>
+		<property name="socketTimeout" value="10000"></property>
+		<property name="dnsMap">
+			<map>
+				<entry key="www.fish.com" value="127.0.0.1"></entry>
+			</map>
+		</property>
+
+        <!--配置SSL相关, 没有https调用的则不需要-->
+        <property name="keyStorePath" value="classpath下的KeyStore路径"></property>
+        <property name="keyStorePwd" value="KeyStore的密码"></property>
+        <property name="keyStoreType" value="KeyStore的类型, 若不配置, 则默认为jks"></property>
+        <property name="protocol" value="SSL或者TLS, 若不配置,则默认为TLS"></property>
+	</bean>
+	
+	<!-- 或者 -->
+	<bean id="defaultHttpClient" class="com.fish.play.http.client.impl.DefaultHttpClientImpl" init-method="init" destroy-method="closeHttpClient">
+		<property name="connectTimeout" value="5000"></property>
+		<property name="socketTimeout" value="10000"></property>
+	</bean>
+	
+</beans>
