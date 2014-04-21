@@ -1,9 +1,12 @@
-package com.fish.play.http.client;
+package com.jd.mobile.architecture.http.client;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 import org.apache.http.Header;
 import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
 
 public interface CustomHttpClient {
 	/**
@@ -65,4 +68,11 @@ public interface CustomHttpClient {
 	 * @return the number of persistent connections for specified httpRoute.
 	 */
 	String getPoolStats(String hostname, int port);
+	
+	/**
+	 * 
+	 * @param uri address
+	 * @return inputStream
+	 */
+	InputStream getInputStream(String uri) throws ClientProtocolException, IOException;
 }

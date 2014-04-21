@@ -1,10 +1,10 @@
-package com.fish.play.http.client.imp;
+package com.jd.mobile.architecture.http.client.impl;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.List;
 
-import com.fish.play.http.client.CustomHttpClient;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.Consts;
@@ -24,6 +24,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 
+import com.jd.mobile.architecture.http.client.CustomHttpClient;
 
 /**
  * In this environment, connection can not be reused. All configuration is default.
@@ -37,11 +38,17 @@ public class DefaultHttpClientImpl implements CustomHttpClient {
 
 	private ResponseHandler<String> responseHandler;
 	private int connectTimeout = 5 * 1000;
+	/**
+	 * 'http.socket.timeout': defines the socket timeout (SO_TIMEOUT) in milliseconds, which is the timeout for waiting
+	 * for data or, put differently, a maximum period inactivity between two consecutive data packets). A timeout value
+	 * of zero is interpreted as an infinite timeout. This parameter expects a value of type java.lang.Integer. If this
+	 * parameter is not set read operations will not time out (infinite timeout).
+	 */
 	private int socketTimeout = 10 * 1000;
-	private CloseableHttpClient httpclient;
+	private CloseableHttpClient httpClient;
 	public void init() {
 		requestConfig = RequestConfig.custom().setConnectTimeout(connectTimeout).setSocketTimeout(socketTimeout).build();
-		httpclient = HttpClients.custom().setDefaultRequestConfig(requestConfig).build();
+		httpClient = HttpClients.custom().setDefaultRequestConfig(requestConfig).build();
 		responseHandler = new ResponseHandler<String>() {
 			public String handleResponse(final HttpResponse response) throws ClientProtocolException, IOException {
 				int status = response.getStatusLine().getStatusCode();
@@ -57,6 +64,7 @@ public class DefaultHttpClientImpl implements CustomHttpClient {
 				}
 			}
 		};
+		
 	}
 
 	public String post(String uri, List<NameValuePair> list) {
@@ -77,7 +85,7 @@ public class DefaultHttpClientImpl implements CustomHttpClient {
 			}
 		}
 		try {
-			responseBody = httpclient.execute(httpPost, responseHandler);
+			responseBody = httpClient.execute(httpPost, responseHandler);
 		} catch (Exception e) {
 			log.error("default httpclient post() execute exception, " + e);
 		} 
@@ -102,16 +110,29 @@ public class DefaultHttpClientImpl implements CustomHttpClient {
 			}
 		}
 		try {
-			responseBody = httpclient.execute(httpGet, responseHandler);
+			responseBody = httpClient.execute(httpGet, responseHandler);
 		} catch (Exception e) {
 			log.error("default httpclient get() execute exception, " + e);
 		}
 		return responseBody;
 	}
+	
+	
+
+	public InputStream getInputStream(String uri) throws ClientProtocolException, IOException {
+		HttpGet httpGet = new HttpGet(uri);
+		HttpResponse response = httpClient.execute(httpGet);
+		int status = response.getStatusLine().getStatusCode();
+		if (status >= HttpStatus.SC_OK && status < HttpStatus.SC_MULTIPLE_CHOICES) { 
+			HttpEntity entity = response.getEntity();
+			return entity.getContent();
+		}
+		return null;
+	}
 
 	public void closeHttpClient() {
 		try {
-			httpclient.close();
+			httpClient.close();
 		} catch (IOException e) {
 			log.error("default httpclient close exception, " + e);
 		}

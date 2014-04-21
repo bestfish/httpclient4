@@ -1,4 +1,4 @@
-package com.fish.play.http.client.imp;
+package com.jd.mobile.architecture.http.client.impl;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,11 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import com.fish.play.http.client.CustomHttpClient;
-import com.fish.play.http.dns.CustomDynamicDnsResolver;
-import com.fish.play.http.evict.IdleConnectionEvictThread;
-import com.fish.play.http.keepalive.CustomConnectionKeepAliveStrategy;
-import com.fish.play.http.poolfactory.PoolingHttpClientFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.Consts;
@@ -43,7 +38,11 @@ import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.pool.PoolStats;
 import org.apache.http.util.EntityUtils;
 
-
+import com.jd.mobile.architecture.http.client.CustomHttpClient;
+import com.jd.mobile.architecture.http.dns.CustomDynamicDnsResolver;
+import com.jd.mobile.architecture.http.evict.IdleConnectionEvictThread;
+import com.jd.mobile.architecture.http.keepalive.CustomConnectionKeepAliveStrategy;
+import com.jd.mobile.architecture.http.poolfactory.PoolingHttpClientFactory;
 
 import javax.net.ssl.SSLContext;
 
@@ -81,7 +80,12 @@ public class PoolingHttpClientImpl implements CustomHttpClient {
 	private long evictDelay = 5 * 1000;
 	/** time to connect */
 	private int connectTimeout = 5 * 1000;
-	/** time to transmit */
+	/**
+	 * 'http.socket.timeout': defines the socket timeout (SO_TIMEOUT) in milliseconds, which is the timeout for waiting
+	 * for data or, put differently, a maximum period inactivity between two consecutive data packets). A timeout value
+	 * of zero is interpreted as an infinite timeout. This parameter expects a value of type java.lang.Integer. If this
+	 * parameter is not set read operations will not time out (infinite timeout).
+	 */
 	private int socketTimeout = 10 * 1000;
 
 	public void init() throws Exception {
@@ -102,7 +106,6 @@ public class PoolingHttpClientImpl implements CustomHttpClient {
 				}
 			}
 		};
-
 
 		CustomDynamicDnsResolver dnsResolver = CustomDynamicDnsResolver.INSTANCE;
 		if (dnsMap != null && !dnsMap.isEmpty()) {
@@ -159,7 +162,7 @@ public class PoolingHttpClientImpl implements CustomHttpClient {
 				.setSocketTimeout(socketTimeout).build();
 
 		httpClient = PoolingHttpClientFactory.createPoolingHttpClient(connectionKeepAliveStrategy,
-                poolingHttpClientConnectionManager, idleConnectionMonitor, 0, evictDelay, requestConfig);
+				poolingHttpClientConnectionManager, idleConnectionMonitor, 0, evictDelay, requestConfig);
 
 	}
 
@@ -216,7 +219,20 @@ public class PoolingHttpClientImpl implements CustomHttpClient {
 		}
 		return responseBody;
 	}
+	
+	
 
+
+	public InputStream getInputStream(String uri) throws ClientProtocolException, IOException {
+		HttpGet httpGet = new HttpGet(uri);
+		HttpResponse response = httpClient.execute(httpGet);
+		int status = response.getStatusLine().getStatusCode();
+		if (status >= HttpStatus.SC_OK && status < HttpStatus.SC_MULTIPLE_CHOICES) { 
+			HttpEntity entity = response.getEntity();
+			return entity.getContent();
+		}
+		return null;
+	}
 
 	public void closeHttpClient() {
 		try {
