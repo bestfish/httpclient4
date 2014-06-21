@@ -1,4 +1,5 @@
-package com.jd.mobile.architecture.http.client.impl;
+package com.fish.play.http.client.imp;
+
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,7 +25,8 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 
-import com.jd.mobile.architecture.http.client.CustomHttpClient;
+import com.fish.play.http.client.CustomHttpClient;
+
 
 /**
  * In this environment, connection can not be reused. All configuration is default.

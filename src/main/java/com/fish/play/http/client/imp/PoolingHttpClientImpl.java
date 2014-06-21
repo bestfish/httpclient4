@@ -1,4 +1,5 @@
-package com.jd.mobile.architecture.http.client.impl;
+package com.fish.play.http.client.imp;
+
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -9,6 +10,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import javax.net.ssl.SSLContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -38,13 +41,11 @@ import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.pool.PoolStats;
 import org.apache.http.util.EntityUtils;
 
-import com.jd.mobile.architecture.http.client.CustomHttpClient;
-import com.jd.mobile.architecture.http.dns.CustomDynamicDnsResolver;
-import com.jd.mobile.architecture.http.evict.IdleConnectionEvictThread;
-import com.jd.mobile.architecture.http.keepalive.CustomConnectionKeepAliveStrategy;
-import com.jd.mobile.architecture.http.poolfactory.PoolingHttpClientFactory;
-
-import javax.net.ssl.SSLContext;
+import com.fish.play.http.client.CustomHttpClient;
+import com.fish.play.http.dns.CustomDynamicDnsResolver;
+import com.fish.play.http.evict.IdleConnectionEvictThread;
+import com.fish.play.http.keepalive.CustomConnectionKeepAliveStrategy;
+import com.fish.play.http.poolfactory.PoolingHttpClientFactory;
 
 /**
  * In this environment, connection can not be reused. All configuration is configured by custom.

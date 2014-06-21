@@ -1,4 +1,5 @@
-package com.jd.mobile.architecture.http.client;
+package com.fish.play.http.client;
+
 
 import java.io.IOException;
 import java.io.InputStream;
