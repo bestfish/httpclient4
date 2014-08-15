@@ -22,7 +22,7 @@ public class PoolingHttpClientFactory {
 			PoolingHttpClientConnectionManager connManager, Runnable idleConnectionMonitor, long initialDelay,
 			long delay, RequestConfig requestConfig) {
 
-		ScheduledExecutorService schedule = Executors.newSingleThreadScheduledExecutor();
+		ScheduledExecutorService schedule = Executors.newSingleThreadScheduledExecutor(new DaemonThreadFactory());
 		schedule.scheduleWithFixedDelay(idleConnectionMonitor, initialDelay, delay, TimeUnit.MILLISECONDS);
 
 		return HttpClients.custom().setKeepAliveStrategy(keepAliveStrategy).setConnectionManager(connManager)

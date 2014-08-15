@@ -35,7 +35,6 @@ import org.apache.http.conn.socket.ConnectionSocketFactory;
 import org.apache.http.conn.socket.PlainConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLContexts;
-import org.apache.http.entity.ContentType;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.pool.PoolStats;
@@ -70,9 +69,9 @@ public class PoolingHttpClientImpl implements CustomHttpClient {
     private String keyStoreType;
 
 	/** max connections per route */
-	private int defaultMaxPerRoute = 2 * Runtime.getRuntime().availableProcessors() + 1;
+	private int defaultMaxPerRoute = 2 * Runtime.getRuntime().availableProcessors();
 	/** max connections in all */
-	private int maxTotal = 10 * 2 * Runtime.getRuntime().availableProcessors() + 1;
+	private int maxTotal = 10 * 2 * Runtime.getRuntime().availableProcessors();
 	/** the idle time(ms) of connections to be closed */
 	private long idleTime = 5 * 1000;
 	/** time to live */
@@ -87,7 +86,7 @@ public class PoolingHttpClientImpl implements CustomHttpClient {
 	 * of zero is interpreted as an infinite timeout. This parameter expects a value of type java.lang.Integer. If this
 	 * parameter is not set read operations will not time out (infinite timeout).
 	 */
-	private int socketTimeout = 10 * 1000;
+	private int socketTimeout = 5 * 1000;
 
 	public void init() throws Exception {
 		responseHandler = new ResponseHandler<String>() {
@@ -96,12 +95,9 @@ public class PoolingHttpClientImpl implements CustomHttpClient {
 				if (status >= HttpStatus.SC_OK && status < HttpStatus.SC_MULTIPLE_CHOICES) {
 					HttpEntity entity = response.getEntity();
 					
-					Charset charset = ContentType.getOrDefault(entity).getCharset();
-					if (charset == null) {
-						charset = Charset.forName("UTF-8");
-					}
+					Charset defaultCharset = Charset.forName("UTF-8");;
 					
-					return entity != null ? EntityUtils.toString(entity, charset) : null;
+					return entity != null ? EntityUtils.toString(entity, defaultCharset) : null;
 				} else {
 					throw new ClientProtocolException("Unexpected response status: " + status);
 				}
